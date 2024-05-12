@@ -29,6 +29,8 @@ fn main() -> std::io::Result<()> {
     let mut current_size = 0usize;
     let mut start_time = Instant::now(); // Start the timer
 
+    let mut tot_lines = 0;
+
     while current_size < target_size {
         let line_length = rng.sample(&length_range);
         let line: String = (0..line_length)
@@ -39,11 +41,12 @@ fn main() -> std::io::Result<()> {
         file.write_all(line.as_bytes())?;
         file.write_all(b"\n")?;
         current_size += line.len() + 1; // +1 for the newline character
+        tot_lines += 1;
     }
 
     file.flush()?;
 
-    println!("Generated file {}", path.display());
+    println!("Generated file {} with {} lines", path.display(), tot_lines);
     println!("Time to write file: {:?}", start_time.elapsed()); // Print the duration
 
     /////////////////////////////////
@@ -52,7 +55,7 @@ fn main() -> std::io::Result<()> {
     start_time = Instant::now();
     let file = File::open(&path)?;
     let reader = BufReader::new(file);
-    let nth_line = 1000;
+    let nth_line = 10000000;
 
     let line = reader
         .lines()
@@ -60,8 +63,8 @@ fn main() -> std::io::Result<()> {
         .transpose()? // Turn Option<Result<String>> into Result<Option<String>>
         .unwrap_or_else(|| "Line not found".to_string());
 
-    println!("The 1000th line is: {}", line);
-    println!("Time to read 1000th line: {:?}", start_time.elapsed()); // Print the duration
+    println!("The 10 millionth line is: {}", line);
+    println!("Time to read 10 millionth line: {:?}", start_time.elapsed()); // Print the duration
 
     Ok(())
 }
